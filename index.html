@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pick Me! v14</title>
+<style>
+:root{
+  --check-color:#1769d2;
+  --ink:#141923;
+  --muted:#6f7888;
+  --line:#e7eaf0;
+  --panel:#ffffffee;
+  --soft:#f7f8fb;
+  --accent:#315fca;
+  --shadow:0 18px 60px rgba(25,35,55,.10);
+}
+*{box-sizing:border-box}
+html{min-height:100%;background:#eef1f6}
+body{
+  margin:0;
+  min-height:100%;
+  font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',Arial,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(120,143,255,.11), transparent 24%),
+    radial-gradient(circle at 88% 0%, rgba(255,170,199,.10), transparent 26%),
+    linear-gradient(180deg,#f8f9fc 0%,#f1f3f8 58%,#edf0f5 100%);
+}
+body:before{
+  content:'';position:fixed;inset:0;pointer-events:none;opacity:.35;
+  background-image:linear-gradient(rgba(255,255,255,.55) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.55) 1px,transparent 1px);
+  background-size:28px 28px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.45),transparent 68%);
+}
+.wrap{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:400px minmax(600px,1fr);
+  gap:42px;
+  padding:42px;
+  max-width:1440px;
+  margin:auto;
+  align-items:start;
+}
+.panel{
+  position:relative;
+  background:var(--panel);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.86);
+  outline:1px solid rgba(207,213,224,.72);
+  border-radius:28px;
+  padding:26px;
+  box-shadow:var(--shadow);
+  align-self:start;
+}
+.panel:before{
+  content:'EDITOR';
+  display:inline-flex;align-items:center;height:24px;padding:0 9px;margin-bottom:10px;
+  border-radius:999px;background:#eef2ff;color:#5169b8;font-size:10px;font-weight:900;letter-spacing:.13em;
+}
+.stage{display:flex;align-items:flex-start;justify-content:center;min-height:780px;position:sticky;top:28px;padding-top:8px;overflow:visible}
+h1{font-size:29px;letter-spacing:-.035em;margin:0 0 8px;font-weight:850}
+.sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:24px}
+label{display:block;font-size:12px;font-weight:800;margin:18px 0 8px;color:#3d4656;letter-spacing:-.01em}
+.input,.select,.textarea{
+  width:100%;border:1px solid #dfe4ec;border-radius:14px;padding:13px 14px;font-size:14px;outline:none;background:rgba(255,255,255,.92);color:var(--ink);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);transition:.18s ease;
+}
+.input:hover,.select:hover,.textarea:hover{border-color:#cfd6e2}
+.input:focus,.select:focus,.textarea:focus{border-color:#9ab0ea;box-shadow:0 0 0 4px rgba(79,112,202,.10);background:#fff}
+.select{appearance:none;-webkit-appearance:none;padding-right:46px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:16px}
+.layoutDropdown{position:relative;width:100%}.layoutDropdownButton{width:100%;height:46px;border:1px solid #dfe4ec;border-radius:14px;padding:0 44px 0 14px;background:rgba(255,255,255,.92);color:var(--ink);font-size:14px;text-align:left;cursor:pointer;position:relative;box-shadow:inset 0 1px 0 rgba(255,255,255,.7);transition:.18s ease}.layoutDropdownButton:hover{border-color:#cfd6e2}.layoutDropdownButton:focus,.layoutDropdown.open .layoutDropdownButton{outline:none;border-color:#9ab0ea;box-shadow:0 0 0 4px rgba(79,112,202,.10);background:#fff}.layoutDropdownChevron{position:absolute;right:16px;top:50%;width:16px;height:16px;transform:translateY(-50%);pointer-events:none;transition:transform .18s ease}.layoutDropdown.open .layoutDropdownChevron{transform:translateY(-50%) rotate(180deg)}.layoutDropdownMenu{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:30;padding:6px;background:rgba(255,255,255,.98);border:1px solid #dfe4ec;border-radius:14px;box-shadow:0 14px 34px rgba(31,42,68,.14);display:none}.layoutDropdown.open .layoutDropdownMenu{display:block}.layoutDropdownOption{width:100%;border:0;background:transparent;border-radius:10px;padding:10px 12px;text-align:left;font-size:13px;color:#4b5565;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:.15s ease}.layoutDropdownOption:hover{background:#f4f7fd;color:#2f4e9d}.layoutDropdownOption.active{background:#edf2ff;color:#315fc8;font-weight:800}.layoutDropdownOption .layoutMeta{font-size:11px;color:#8a94a8;font-weight:700}.layoutDropdownOption.active .layoutMeta{color:#6985ce}
+.textarea{resize:none;min-height:88px;line-height:1.55}
+.help{font-size:11px;color:#8a94a8;line-height:1.6;margin-top:8px}
+.uploads{display:grid;gap:8px}
+.upload{
+  border:1px dashed #c6cedb;border-radius:13px;padding:12px 8px;text-align:center;font-size:12px;color:#697487;cursor:pointer;background:rgba(250,251,253,.92);margin:0;font-weight:800;transition:.18s ease;
+}
+.upload:hover{border-color:#8ca4df;background:#f3f6ff;color:#415fba;transform:translateY(-1px)}
+.upload input{display:none}
+.controlbox{margin-top:18px;padding:14px;border-radius:16px;background:linear-gradient(180deg,#f8f9fc,#f3f5f9);border:1px solid #e5e9f0}
+.controltitle{font-size:12px;font-weight:850;margin-bottom:10px;color:#3a4352}
+.rangeRow{display:grid;grid-template-columns:50px 1fr 42px;align-items:center;gap:8px;font-size:11px;color:#667085}.zoomPanel{margin-top:12px;padding-top:12px;border-top:1px solid #e7ebf2}.zoomPanel.hidden{display:none}
+input[type=range]{accent-color:#4b6fd0}
+.modeBtns{display:flex;gap:8px;margin-top:8px}.modeBtn{flex:1;border:1px solid #dce2eb;background:#fff;color:#596579;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:850;cursor:pointer;transition:.18s ease}.modeBtn:hover{border-color:#bec9dc}.modeBtn.active{background:#eaf0ff;color:#345fc8;border-color:#bfcdf0;box-shadow:inset 0 0 0 1px rgba(49,95,202,.04)}
+.colorrow{display:flex;align-items:center;gap:10px}.colorPickerWrap{position:relative;width:48px;height:40px;border:1px solid #d7deeb;border-radius:11px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(15,23,42,.04)}.colorPickerWrap input[type=color]{position:absolute;inset:0;width:100%;height:100%;border:0;padding:2px;cursor:pointer;background:transparent;border-radius:11px}.colorPickerWrap input[type=color]::-webkit-color-swatch-wrapper{padding:0}.colorPickerWrap input[type=color]::-webkit-color-swatch{border:none;border-radius:9px}.colorPickerWrap input[type=color]::-moz-color-swatch{border:none;border-radius:9px}.eyedropperHint{position:absolute;right:4px;bottom:4px;width:18px;height:18px;border-radius:5px;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.14)}.eyedropperHint svg{width:12px;height:12px;stroke:#667085;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}.swatch{width:29px;height:29px;border-radius:9px;border:2px solid #fff;box-shadow:0 0 0 1px #d7dce5,0 2px 5px rgba(15,23,42,.08);cursor:pointer;transition:.18s ease}.swatch:hover{transform:translateY(-2px) scale(1.03)}
+.optionGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.iconBtn{height:48px;border:1px solid #dce2eb;border-radius:13px;background:#fff;font-size:21px;cursor:pointer;transition:.18s ease}.iconBtn:hover{transform:translateY(-1px);border-color:#bcc7db}.iconBtn.active{background:#eaf0ff;border-color:#bfcdf0;color:#295fd1;box-shadow:0 4px 12px rgba(49,95,202,.08)}
+.btnrow{display:flex;gap:10px;margin-top:24px;position:sticky;bottom:12px;padding-top:8px;background:linear-gradient(to bottom,rgba(255,255,255,0),rgba(255,255,255,.98) 28%)}
+.btn{flex:1;border:0;border-radius:14px;padding:13px 14px;font-size:13px;font-weight:850;cursor:pointer;transition:.18s ease}.btn:hover{transform:translateY(-1px)}.primary{background:linear-gradient(180deg,#3c6fe0,#2f61cf);color:#fff;box-shadow:0 8px 18px rgba(47,97,207,.20)}.primary:hover{box-shadow:0 10px 22px rgba(47,97,207,.26)}.secondary{background:#eef2f8;color:#4c5f7f}.secondary:hover{background:#e7edf6}
+.card{width:560px;min-width:560px;max-width:560px;flex:0 0 560px;background:#fff;border:8px solid #fff;border-radius:0;overflow:hidden;box-shadow:0 18px 42px rgba(26,34,50,.10);outline:1px solid rgba(199,207,220,.82)}
+.header{background:#1769d2;color:#fff;padding:34px 34px 38px}.keyword{font-size:38px;font-weight:800;line-height:1;letter-spacing:-.04em}.instruction{font-size:20px;margin-top:10px;letter-spacing:-.025em;line-height:1.38;white-space:pre-wrap;font-weight:500}.brand{display:none}
+.grid{display:grid;gap:7px;padding:12px 0 0;background:#fff}.tile{position:relative;aspect-ratio:1;background:#e9edf4;overflow:hidden;cursor:pointer;user-select:none;touch-action:none}.tile.active{outline:2px solid #f8c94f;outline-offset:-2px}.tile.reorderHint{outline:4px dashed #76a5ff;outline-offset:-4px}
+.photo{position:absolute;left:50%;top:50%;max-width:none;pointer-events:none;transform-origin:center center}.empty{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;color:#8993a6;font-size:13px;padding:20px;background:linear-gradient(145deg,#f1f4f8,#e5eaf1)}
+.check{position:absolute;top:10px;left:10px;width:38px;height:38px;border-radius:50%;background:var(--check-color);border:4px solid #fff;display:none;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(23,60,122,.25);z-index:3;color:#fff;font-weight:900;font-size:20px;line-height:1}.tile.selected .check{display:flex}.tile.selected:after{content:'';position:absolute;inset:0;border:5px solid var(--check-color);pointer-events:none;z-index:2}
+.footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #dfe4eb;margin-top:12px;padding:14px 8px 2px;background:#fff}.footerTools{display:flex;align-items:center;gap:18px}.toolIcon{width:42px;height:42px;border:0;background:transparent;color:var(--check-color);display:flex;align-items:center;justify-content:center;padding:0;cursor:default}.toolIcon svg{width:34px;height:34px;display:block}.verifyBtn{border:0;background:var(--check-color);color:#fff;font-size:18px;font-weight:700;padding:14px 26px;min-width:116px;height:54px;border-radius:2px;font-family:inherit}.verifyBtn:active{transform:translateY(1px)}
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:#172033;color:#fff;padding:12px 18px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;box-shadow:0 10px 30px rgba(0,0,0,.18)}.toast.show{opacity:1}
+.smallList{font-size:11px;color:#748096;padding:10px 12px 10px 28px;line-height:1.65;margin:14px 0 0;border:1px solid #e7ebf2;background:#f8f9fb;border-radius:14px}
+.previewShell{position:relative;width:560px;margin:0 auto}.card{transform-origin:top left}
+@media(max-width:1050px){.wrap{grid-template-columns:1fr;padding:20px;gap:24px;max-width:100%}.stage{min-height:auto;order:1;position:static;justify-content:center;overflow:visible;padding:10px 0 22px}.previewShell{margin:0 auto}.panel{order:2;width:100%;max-width:560px;margin:0 auto}.card{width:560px;min-width:560px;max-width:560px;flex:0 0 560px}.optionGrid{grid-template-columns:repeat(5,1fr)}}
+@media(max-width:600px){.wrap{padding-left:16px;padding-right:16px}.stage{justify-content:center}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="panel">
+    <h1>Pick Me! 👀</h1>
+    <div class="sub">레이아웃을 고르고, 사진을 넣고, 질문 문구를 자유롭게 바꿔보세요. 사진 편집과 저장은 모두 이 브라우저 안에서만 처리됩니다.</div>
+
+    <label>레이아웃 선택</label>
+    <div id="layoutDropdown" class="layoutDropdown">
+      <button id="layoutDropdownButton" class="layoutDropdownButton" type="button" aria-haspopup="listbox" aria-expanded="false">
+        <span id="layoutDropdownLabel">2 × 2 (4칸)</span>
+        <svg class="layoutDropdownChevron" viewBox="0 0 24 24" fill="none" stroke="#667085" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <div id="layoutDropdownMenu" class="layoutDropdownMenu" role="listbox">
+        <button class="layoutDropdownOption active" type="button" data-value="2x2" role="option" aria-selected="true"><span>2 × 2</span><span class="layoutMeta">4칸</span></button>
+        <button class="layoutDropdownOption" type="button" data-value="3x2" role="option" aria-selected="false"><span>3 × 2</span><span class="layoutMeta">6칸</span></button>
+        <button class="layoutDropdownOption" type="button" data-value="3x3" role="option" aria-selected="false"><span>3 × 3</span><span class="layoutMeta">9칸</span></button>
+      </div>
+    </div>
+
+    <label>사진 넣기</label>
+    <div id="uploads" class="uploads"></div>
+    <div class="help">원하는 칸의 사진만 개별로 넣을 수 있어요.</div>
+
+    <label>큰 타이틀</label>
+    <input id="keywordInput" class="input" value="강아지" maxlength="20">
+
+    <label>상세 문구</label>
+    <textarea id="instructionInput" class="textarea" maxlength="90">가 있는 타일을 모두 선택하세요.</textarea>
+
+    <div class="controlbox">
+      <div class="controltitle">사진 편집 / 순서 변경</div>
+      <div class="modeBtns">
+        <button class="modeBtn active" id="editModeBtn">사진 편집</button>
+        <button class="modeBtn" id="reorderModeBtn">순서 변경</button>
+      </div>
+      <div id="zoomPanel" class="zoomPanel">
+        <div class="rangeRow"><span>확대</span><input id="zoom" type="range" min="1" max="3" step="0.01" value="1"><span id="zoomVal">100%</span></div>
+        <div class="help">사진 편집 모드에서는 타일 안에서 사진을 드래그해 위치를 조절할 수 있어요.</div>
+      </div>
+      <div id="reorderHelp" class="help" style="display:none">순서 변경 모드에서는 타일을 다른 칸으로 끌어다 놓아 순서를 바꿀 수 있어요.</div>
+    </div>
+
+    <label>체크 아이콘 스타일</label>
+    <div class="optionGrid" id="iconOptions">
+      <button class="iconBtn active" data-icon="✓">✓</button>
+      <button class="iconBtn" data-icon="♥">♥</button>
+      <button class="iconBtn" data-icon="★">★</button>
+      <button class="iconBtn" data-icon="✦">✦</button>
+      <button class="iconBtn" data-icon="●">●</button>
+    </div>
+
+    <label>CAPTCHA 헤더색</label>
+    <div class="colorrow">
+      <div class="colorPickerWrap">
+        <input id="headerColor" type="color" value="#1769d2" aria-label="헤더색 선택">
+        <div class="eyedropperHint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.5 4.5 19.5 9.5"/><path d="M13 6 18 11"/><path d="M4 20l5.5-1.5L19 9l-4-4-9.5 9.5L4 20Z"/></svg></div>
+      </div>
+      <div class="swatches">
+        <button class="swatch" style="background:#1769d2" data-color="#1769d2"></button>
+        <button class="swatch" style="background:#ef6a9b" data-color="#ef6a9b"></button>
+        <button class="swatch" style="background:#7557d8" data-color="#7557d8"></button>
+        <button class="swatch" style="background:#202633" data-color="#202633"></button>
+        <button class="swatch" style="background:#159a83" data-color="#159a83"></button>
+      </div>
+    </div>
+
+    <ul class="smallList">
+      <li>클릭: 체크 켜기/끄기</li>
+      <li>노란 테두리: 현재 편집 중인 타일</li>
+      <li>파란 점선 테두리: 순서 변경 모드에서 드래그 가능한 타일</li>
+    </ul>
+
+    <div class="btnrow">
+      <button class="btn secondary" id="resetBtn">초기화</button>
+      <button class="btn primary" id="saveBtn">PNG 저장</button>
+    </div>
+  </section>
+
+  <section class="stage">
+    <div class="previewShell">
+      <div id="capture" class="card">
+        <div id="header" class="header">
+          <div id="keyword" class="keyword">강아지</div>
+          <div id="instruction" class="instruction">가 있는 타일을 모두 선택하세요.</div>
+          <div class="brand">PICK ME!</div>
+        </div>
+        <div id="grid" class="grid"></div>
+        <div class="footer">
+          <div class="footerTools">
+            <div class="toolIcon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M37 16V8l-4.5 4.5A15 15 0 1 0 39 24" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="toolIcon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M9 26v-4c0-8.3 6.7-15 15-15s15 6.7 15 15v4" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M9 25h7v14H9a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3ZM39 25h-7v14h7a3 3 0 0 0 3-3v-8a3 3 0 0 0-3-3Z" fill="currentColor"/></svg>
+            </div>
+            <div class="toolIcon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="17" stroke="currentColor" stroke-width="4.5"/><path d="M24 21v12" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/><circle cx="24" cy="14.5" r="2.6" fill="currentColor"/></svg>
+            </div>
+          </div>
+          <button class="verifyBtn" type="button">확인</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const layoutMap={"2x2":{cols:2,rows:2,count:4},"3x2":{cols:3,rows:2,count:6},"3x3":{cols:3,rows:3,count:9}};
+let currentLayout='2x2';
+let state=[];
+let tiles=[];
+let active=0;
+let mode='edit';
+let checkChar='✓';
+let previewScale=1;
+
+function blankState(){return {src:null,img:null,scale:1,x:0,y:0,selected:false};}
+function ensureStateCount(n){while(state.length<n) state.push(blankState()); if(state.length>n) state=state.slice(0,n);}
+function makePlaceholder(i){
+  const names=[
+    '내 캐릭터 사진을\n넣어보세요','동물 사진을\n넣어보세요','원하는 이미지를\n넣어보세요','클릭하면 체크돼요',
+    '사진을 넣으면\n바로 채워져요','순서 변경 모드로\n자리도 바꿔요','질문 문구도\n바꿀 수 있어요','체크 아이콘도\n바꿀 수 있어요','저장하면 PNG로\n내려받아져요'
+  ];
+  return (names[i]||'사진을 넣어보세요').replaceAll('\n','<br>');
+}
+
+function buildUploads(){
+  const cfg=layoutMap[currentLayout];
+  const wrap=$('#uploads');
+  wrap.innerHTML='';
+  wrap.style.gridTemplateColumns=`repeat(${cfg.cols}, minmax(0,1fr))`;
+  for(let i=0;i<cfg.count;i++){
+    const label=document.createElement('label');
+    label.className='upload';
+    label.innerHTML=`${i+1}번 사진 넣기<input type="file" accept="image/*" data-slot="${i}">`;
+    wrap.appendChild(label);
+  }
+  $$('#uploads input[type=file]').forEach(inp=>inp.addEventListener('change', handleSingleUpload));
+}
+
+function buildGrid(){
+  const cfg=layoutMap[currentLayout];
+  ensureStateCount(cfg.count);
+  const grid=$('#grid');
+  grid.innerHTML='';
+  grid.style.gridTemplateColumns=`repeat(${cfg.cols}, 1fr)`;
+  tiles=[];
+  for(let i=0;i<cfg.count;i++){
+    const tile=document.createElement('div');
+    tile.className='tile';
+    tile.dataset.index=i;
+    if(mode==='reorder') tile.classList.add('reorderHint');
+    if(i===active) tile.classList.add('active');
+    if(state[i].selected) tile.classList.add('selected');
+
+    if(state[i].src && state[i].img){
+      const img=document.createElement('img');
+      img.className='photo';
+      img.src=state[i].src;
+      tile.appendChild(img);
+    } else {
+      const empty=document.createElement('div');
+      empty.className='empty';
+      empty.innerHTML=makePlaceholder(i);
+      tile.appendChild(empty);
+    }
+    const check=document.createElement('div');
+    check.className='check';
+    check.textContent=checkChar;
+    tile.appendChild(check);
+    grid.appendChild(tile);
+    tiles.push(tile);
+  }
+  bindTileEvents();
+  requestAnimationFrame(()=>{state.forEach((s,i)=>s.src&&render(i));updatePreviewScale();});
+}
+
+function bindText(inputSel,outSel){$(inputSel).addEventListener('input',e=>$(outSel).textContent=e.target.value||' ');}
+bindText('#keywordInput','#keyword'); bindText('#instructionInput','#instruction');
+
+function activate(i){
+  active=i;
+  tiles.forEach((t,j)=>t.classList.toggle('active',j===i));
+  $('#zoom').value=state[i]?.scale||1;
+  $('#zoomVal').textContent=Math.round((state[i]?.scale||1)*100)+'%';
+}
+
+function render(i){
+  const s=state[i], tile=tiles[i]; if(!tile||!s||!s.img) return;
+  const img=tile.querySelector('.photo'); if(!img) return;
+  const tw=tile.offsetWidth, th=tile.offsetHeight;
+  const cover=Math.max(tw/s.img.naturalWidth,th/s.img.naturalHeight);
+  img.style.width=(s.img.naturalWidth*cover)+'px';
+  img.style.height=(s.img.naturalHeight*cover)+'px';
+  img.style.transform=`translate(calc(-50% + ${s.x}px), calc(-50% + ${s.y}px)) scale(${s.scale})`;
+}
+
+function setMode(next){
+  mode=next;
+  $('#editModeBtn').classList.toggle('active',mode==='edit');
+  $('#reorderModeBtn').classList.toggle('active',mode==='reorder');
+  $('#zoomPanel').classList.toggle('hidden',mode!=='edit');
+  $('#reorderHelp').style.display=mode==='reorder'?'block':'none';
+  tiles.forEach(t=>t.classList.toggle('reorderHint',mode==='reorder'));
+}
+$('#editModeBtn').onclick=()=>setMode('edit');
+$('#reorderModeBtn').onclick=()=>setMode('reorder');
+
+function updateCheckIcons(){ $$('.check').forEach(el=>el.textContent=checkChar); }
+$$('#iconOptions .iconBtn').forEach(btn=>btn.onclick=()=>{ $$('#iconOptions .iconBtn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); checkChar=btn.dataset.icon; updateCheckIcons(); });
+
+function setColor(c){
+  $('#headerColor').value=c;
+  $('#header').style.background=c;
+  document.documentElement.style.setProperty('--check-color',c);
+}
+$('#headerColor').oninput=e=>setColor(e.target.value);
+$$('.swatch').forEach(b=>b.onclick=()=>setColor(b.dataset.color));
+
+function applyLayout(value){
+  currentLayout=value;
+  active=0;
+  ensureStateCount(layoutMap[currentLayout].count);
+  const labels={
+    '2x2':'2 × 2 (4칸)',
+    '3x2':'3 × 2 (6칸)',
+    '3x3':'3 × 3 (9칸)'
+  };
+  $('#layoutDropdownLabel').textContent=labels[value];
+  $$('.layoutDropdownOption').forEach(opt=>{
+    const isActive=opt.dataset.value===value;
+    opt.classList.toggle('active',isActive);
+    opt.setAttribute('aria-selected',isActive?'true':'false');
+  });
+  buildUploads();
+  buildGrid();
+  activate(0);
+}
+
+const layoutDropdown=$('#layoutDropdown');
+const layoutDropdownButton=$('#layoutDropdownButton');
+layoutDropdownButton.addEventListener('click',()=>{
+  const open=layoutDropdown.classList.toggle('open');
+  layoutDropdownButton.setAttribute('aria-expanded',open?'true':'false');
+});
+$$('.layoutDropdownOption').forEach(opt=>opt.addEventListener('click',()=>{
+  applyLayout(opt.dataset.value);
+  layoutDropdown.classList.remove('open');
+  layoutDropdownButton.setAttribute('aria-expanded','false');
+  layoutDropdownButton.focus();
+}));
+document.addEventListener('click',e=>{
+  if(!layoutDropdown.contains(e.target)){
+    layoutDropdown.classList.remove('open');
+    layoutDropdownButton.setAttribute('aria-expanded','false');
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    layoutDropdown.classList.remove('open');
+    layoutDropdownButton.setAttribute('aria-expanded','false');
+  }
+});
+
+function handleSingleUpload(e){
+  const f=e.target.files[0]; if(!f) return;
+  const i=+e.target.dataset.slot;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    const im=new Image();
+    im.onload=()=>{
+      state[i]={src:ev.target.result,img:im,scale:1,x:0,y:0,selected:false};
+      buildGrid();
+      activate(i);
+    };
+    im.src=ev.target.result;
+  };
+  rd.readAsDataURL(f);
+}
+
+$('#zoom').oninput=e=>{ if(!state[active]) return; state[active].scale=+e.target.value; $('#zoomVal').textContent=Math.round(state[active].scale*100)+'%'; render(active); };
+
+let drag=null;
+function swapTiles(a,b){ const tmp=state[a]; state[a]=state[b]; state[b]=tmp; buildGrid(); activate(b); }
+function bindTileEvents(){
+  tiles.forEach((tile,i)=>{
+    tile.addEventListener('pointerdown',e=>{
+      activate(i);
+      if(mode==='edit'){
+        drag={type:'edit',i,startX:e.clientX,startY:e.clientY,ox:state[i].x,oy:state[i].y,moved:false};
+      } else {
+        drag={type:'reorder',from:i,startX:e.clientX,startY:e.clientY,moved:false};
+        tile.style.opacity='.7';
+      }
+      tile.setPointerCapture(e.pointerId);
+    });
+    tile.addEventListener('pointermove',e=>{
+      if(!drag) return;
+      if(drag.type==='edit' && drag.i===i && state[i].src){
+        const rawDx=e.clientX-drag.startX, rawDy=e.clientY-drag.startY; if(Math.abs(rawDx)+Math.abs(rawDy)>4) drag.moved=true;
+        const dx=rawDx/previewScale, dy=rawDy/previewScale;
+        state[i].x=drag.ox+dx; state[i].y=drag.oy+dy; render(i);
+      } else if(drag.type==='reorder' && drag.from===i){
+        const dx=e.clientX-drag.startX, dy=e.clientY-drag.startY; if(Math.abs(dx)+Math.abs(dy)>4) drag.moved=true;
+      }
+    });
+    tile.addEventListener('pointerup',e=>{
+      if(!drag) return;
+      if(drag.type==='edit' && drag.i===i){
+        if(!drag.moved) { state[i].selected=!state[i].selected; tile.classList.toggle('selected',state[i].selected); }
+      } else if(drag.type==='reorder' && drag.from===i){
+        tile.style.opacity='1';
+        const targetEl=document.elementFromPoint(e.clientX,e.clientY)?.closest('.tile');
+        if(targetEl){
+          const to=+targetEl.dataset.index;
+          if(drag.moved && to!==drag.from){ swapTiles(drag.from,to); drag=null; return; }
+        }
+        if(!drag.moved){ state[i].selected=!state[i].selected; tile.classList.toggle('selected',state[i].selected); }
+      }
+      if(tile.hasPointerCapture(e.pointerId)) tile.releasePointerCapture(e.pointerId);
+      drag=null;
+    });
+    tile.addEventListener('pointercancel',()=>{tile.style.opacity='1'; drag=null;});
+  });
+}
+
+function updatePreviewScale(){
+  const shell=document.querySelector('.previewShell');
+  const card=$('#capture');
+  if(!shell||!card) return;
+  const desktop=window.innerWidth>1050;
+  const available=Math.max(280, window.innerWidth-32);
+  previewScale=desktop?1:Math.min(1, available/560);
+  card.style.transform=`scale(${previewScale})`;
+  shell.style.width=(560*previewScale)+'px';
+  shell.style.height=(card.offsetHeight*previewScale)+'px';
+}
+window.addEventListener('resize',()=>{updatePreviewScale(); state.forEach((s,i)=>s?.src&&render(i));});
+
+$('#resetBtn').onclick=()=>{
+  currentLayout='2x2'; state=[]; ensureStateCount(4); active=0; checkChar='✓';
+  $$('#iconOptions .iconBtn').forEach((b,idx)=>b.classList.toggle('active',idx===0));
+  $('#keywordInput').value='강아지'; $('#instructionInput').value='가 있는 타일을 모두 선택하세요.';
+  $('#keyword').textContent='강아지'; $('#instruction').textContent='가 있는 타일을 모두 선택하세요.';
+  setColor('#1769d2'); setMode('edit'); applyLayout('2x2');
+};
+
+function drawCover(ctx,s,x,y,w,h,previewW){
+  if(!s.img) return;
+  ctx.save(); ctx.beginPath(); ctx.rect(x,y,w,h); ctx.clip();
+  const cover=Math.max(w/s.img.naturalWidth,h/s.img.naturalHeight);
+  const dw=s.img.naturalWidth*cover*s.scale, dh=s.img.naturalHeight*cover*s.scale;
+  const k=w/previewW;
+  ctx.drawImage(s.img, x+w/2-dw/2+s.x*k, y+h/2-dh/2+s.y*k, dw, dh);
+  ctx.restore();
+}
+
+function wrapText(ctx,text,x,y,maxWidth,lineHeight){
+  const paragraphs=(text||'').split('\n');
+  paragraphs.forEach((para,pIdx)=>{
+    const words=para.split(' '); let line='';
+    words.forEach(word=>{
+      const test=line? line+' '+word: word;
+      if(ctx.measureText(test).width>maxWidth && line){ ctx.fillText(line,x,y); line=word; y+=lineHeight; }
+      else line=test;
+    });
+    ctx.fillText(line,x,y);
+    if(pIdx<paragraphs.length-1) y+=lineHeight;
+    y+=lineHeight;
+  });
+}
+
+
+function drawFooterIcons(ctx,x,y,color,scale){
+  ctx.save();
+  ctx.strokeStyle=color; ctx.fillStyle=color;
+  ctx.lineWidth=2.5*scale; ctx.lineCap='round'; ctx.lineJoin='round';
+
+  // 미리보기와 동일하게 42px 툴 박스 안에 34px 아이콘을 중앙 정렬
+  const icon=34*scale;
+  const tool=42*scale;
+  const gap=18*scale;
+  const ox=(tool-icon)/2;
+  const centerY=y+tool/2;
+
+  // 각 아이콘은 동일한 시각적 중심선(centerY)을 기준으로 배치
+  // refresh
+  let bx=x+ox;
+  let by=centerY-icon/2;
+  const cx=bx+icon/2, cy=centerY, rr=icon*0.33;
+  ctx.beginPath(); ctx.arc(cx,cy,rr,0.15*Math.PI,1.85*Math.PI); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(bx+icon*0.78,by+icon*0.10);
+  ctx.lineTo(bx+icon*0.78,by+icon*0.34);
+  ctx.lineTo(bx+icon*0.54,by+icon*0.34);
+  ctx.stroke();
+
+  // headphones: 실제 도형이 아래로 무거워 보여 0.5px 정도 위로 보정
+  bx=x+tool+gap+ox;
+  by=centerY-icon/2-(0.5*scale);
+  ctx.beginPath(); ctx.arc(bx+icon/2,by+icon*0.56,icon*0.34,Math.PI,0); ctx.stroke();
+  ctx.fillRect(bx+icon*0.10,by+icon*0.54,icon*0.15,icon*0.36);
+  ctx.fillRect(bx+icon*0.75,by+icon*0.54,icon*0.15,icon*0.36);
+
+  // info
+  bx=x+(tool+gap)*2+ox;
+  by=centerY-icon/2;
+  ctx.beginPath(); ctx.arc(bx+icon/2,centerY,icon*0.37,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bx+icon/2,by+icon*0.45); ctx.lineTo(bx+icon/2,by+icon*0.75); ctx.stroke();
+  ctx.beginPath(); ctx.arc(bx+icon/2,by+icon*0.29,icon*0.055,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+$('#saveBtn').onclick=()=>{
+  const toast=$('#toast'); toast.textContent='이미지를 만들고 있어요...'; toast.classList.add('show');
+  const cfg=layoutMap[currentLayout];
+  const W=1160, B=24, inner=W-B*2, headerH=340, gap=14, gridY=B+headerH+24, tile=(inner-gap*(cfg.cols-1))/cfg.cols, footerY=gridY+tile*cfg.rows+gap*(cfg.rows-1)+18, footerH=150, H=footerY+footerH+B;
+  const c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d');
+  const currentColor=$('#headerColor').value;
+  x.fillStyle='#fff'; x.fillRect(0,0,W,H);
+  x.fillStyle=currentColor; x.fillRect(B,B,inner,headerH);
+  x.fillStyle='#fff'; x.textAlign='left'; x.font="800 84px 'Apple SD Gothic Neo','Noto Sans KR',Arial,sans-serif"; x.fillText($('#keywordInput').value||' ', B+56, B+112);
+  x.font="500 44px 'Apple SD Gothic Neo','Noto Sans KR',Arial,sans-serif"; wrapText(x,$('#instructionInput').value||' ',B+56,B+188,inner-112,52);
+  x.globalAlpha=.85; x.font="800 22px 'Apple SD Gothic Neo','Noto Sans KR',Arial,sans-serif"; x.textAlign='right'; x.fillText('PICK ME!', W-B-56, B+280); x.globalAlpha=1;
+  const previewW=tiles[0]?.offsetWidth||tile;
+  for(let i=0;i<cfg.count;i++){
+    const col=i%cfg.cols, row=Math.floor(i/cfg.cols), tx=B+col*(tile+gap), ty=gridY+row*(tile+gap);
+    x.fillStyle='#e9edf4'; x.fillRect(tx,ty,tile,tile); drawCover(x,state[i],tx,ty,tile,tile,previewW);
+    if(!state[i].img){ x.fillStyle='#8c96a9'; x.textAlign='center'; x.font='28px Arial'; x.fillText('사진을 넣어보세요',tx+tile/2,ty+tile/2); x.textAlign='left'; }
+    if(state[i].selected){
+      x.strokeStyle=currentColor; x.lineWidth=10; x.strokeRect(tx+5,ty+5,tile-10,tile-10);
+      x.fillStyle=currentColor; x.beginPath(); x.arc(tx+46,ty+46,38,0,Math.PI*2); x.fill();
+      x.fillStyle='#fff'; x.font='bold 40px Arial'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(checkChar, tx+46, ty+49);
+      x.textAlign='left'; x.textBaseline='alphabetic';
+    }
+  }
+  const footerTop=footerY;
+  x.strokeStyle='#dfe4eb'; x.lineWidth=2; x.beginPath(); x.moveTo(B,footerTop); x.lineTo(W-B,footerTop); x.stroke();
+
+  // 저장본 하단 UI를 미리보기 CSS 비율과 동일하게 환산
+  const previewContentW=536; // 560px card - 12px border x 2
+  const uiScale=inner/previewContentW;
+  const footerPadX=8*uiScale;
+  const footerPadTop=14*uiScale;
+  drawFooterIcons(x,B+footerPadX,footerTop+footerPadTop,currentColor,uiScale);
+
+  const btnW=116*uiScale;
+  const btnH=54*uiScale;
+  const btnX=W-B-footerPadX-btnW;
+  const btnY=footerTop+footerPadTop;
+  x.fillStyle=currentColor; x.fillRect(btnX,btnY,btnW,btnH);
+  x.fillStyle='#fff'; x.font=`700 ${18*uiScale}px Apple SD Gothic Neo, Noto Sans KR, Arial`;
+  x.textAlign='center'; x.textBaseline='middle'; x.fillText('확인',btnX+btnW/2,btnY+btnH/2+1*uiScale);
+  x.textAlign='left'; x.textBaseline='alphabetic';
+  c.toBlob(blob=>{ const a=document.createElement('a'); a.download='pick-me-card-v22.png'; a.href=URL.createObjectURL(blob); a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); toast.textContent='수정본 저장 완료!'; setTimeout(()=>toast.classList.remove('show'),1700); }, 'image/png');
+};
+
+ensureStateCount(4); applyLayout('2x2'); setColor('#1769d2');
+</script>
+</body>
+</html>
