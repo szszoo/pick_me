@@ -88,7 +88,7 @@ label{display:block;font-size:12px;font-weight:800;margin:18px 0 8px;color:#3d46
 .upload:hover{border-color:#8ca4df;background:#f3f6ff;color:#415fba;transform:translateY(-1px)}
 .upload input{display:none}
 .controlbox{margin-top:18px;padding:14px;border-radius:16px;background:linear-gradient(180deg,#f8f9fc,#f3f5f9);border:1px solid #e5e9f0}
-.controltitle{font-size:12px;font-weight:850;margin-bottom:10px;color:#3a4352}
+.controltitle{font-size:12px;font-weight:850;margin-bottom:10px;color:#3a4352;display:flex;align-items:center;justify-content:space-between;gap:10px}.activePhotoLabel{font-size:11px;font-weight:700;color:#98a2b3;white-space:nowrap}
 .rangeRow{display:grid;grid-template-columns:50px 1fr 42px;align-items:center;gap:8px;font-size:11px;color:#667085}.zoomPanel{margin-top:12px;padding-top:12px;border-top:1px solid #e7ebf2}.zoomPanel.hidden{display:none}
 input[type=range]{accent-color:#4b6fd0}
 .modeBtns{display:flex;gap:8px;margin-top:8px}.modeBtn{flex:1;border:1px solid #dce2eb;background:#fff;color:#596579;border-radius:12px;padding:10px 12px;font-size:12px;font-weight:850;cursor:pointer;transition:.18s ease}.modeBtn:hover{border-color:#bec9dc}.modeBtn.active{background:#eaf0ff;color:#345fc8;border-color:#bfcdf0;box-shadow:inset 0 0 0 1px rgba(49,95,202,.04)}
@@ -146,7 +146,7 @@ input[type=range]{accent-color:#4b6fd0}
     <textarea id="instructionInput" class="textarea" maxlength="90">가 있는 타일을 모두 선택하세요.</textarea>
 
     <div class="controlbox">
-      <div class="controltitle">사진 편집 / 순서 변경</div>
+      <div class="controltitle"><span>사진 편집 / 순서 변경</span><span id="activePhotoLabel" class="activePhotoLabel">현재 선택: 1번 사진</span></div>
       <div class="modeBtns">
         <button class="modeBtn active" id="editModeBtn">사진 편집</button>
         <button class="modeBtn" id="reorderModeBtn">순서 변경</button>
@@ -330,6 +330,7 @@ bindText('#keywordInput','#keyword'); bindText('#instructionInput','#instruction
 
 function activate(i){
   active=i;
+  const activeLabel=$('#activePhotoLabel'); if(activeLabel) activeLabel.textContent=`현재 선택: ${i+1}번 사진`;
   tiles.forEach((t,j)=>t.classList.toggle('active',j===i));
   $('#zoom').value=state[i]?.scale||1;
   $('#zoomVal').textContent=Math.round((state[i]?.scale||1)*100)+'%';
@@ -634,9 +635,22 @@ function buildOutputCanvas(){
     x.fillStyle='#e9edf4'; x.fillRect(tx,ty,tile,tile); drawCover(x,state[i],tx,ty,tile,tile,previewW);
     if(!state[i].img){ x.fillStyle='#8c96a9'; x.textAlign='center'; x.font='28px Arial'; x.fillText('사진을 넣어보세요',tx+tile/2,ty+tile/2); x.textAlign='left'; }
     if(state[i].selected){
+      // 선택 테두리
       x.strokeStyle=currentColor; x.lineWidth=10; x.strokeRect(tx+5,ty+5,tile-10,tile-10);
-      x.fillStyle=currentColor; x.beginPath(); x.arc(tx+52,ty+52,32,0,Math.PI*2); x.fill();
-      x.fillStyle='#fff'; x.font='bold 34px Arial'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(checkChar, tx+52, ty+54);
+
+      // 미리보기의 체크 배지 비율을 저장본에도 동일하게 적용
+      // 흰색 링을 먼저 그려 선택 테두리와 배지가 붙어 보이지 않게 분리
+      const badgeCx=tx+70;
+      const badgeCy=ty+70;
+      const badgeOuterR=48;
+      const badgeInnerR=39;
+      x.fillStyle='#fff';
+      x.beginPath(); x.arc(badgeCx,badgeCy,badgeOuterR,0,Math.PI*2); x.fill();
+      x.fillStyle=currentColor;
+      x.beginPath(); x.arc(badgeCx,badgeCy,badgeInnerR,0,Math.PI*2); x.fill();
+
+      x.fillStyle='#fff'; x.font='bold 42px Arial'; x.textAlign='center'; x.textBaseline='middle';
+      x.fillText(checkChar,badgeCx,badgeCy+2);
       x.textAlign='left'; x.textBaseline='alphabetic';
     }
   }
