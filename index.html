@@ -112,8 +112,9 @@ input[type=range]{accent-color:#4b6fd0}
 @media(max-width:600px){.wrap{padding-left:16px;padding-right:16px}.stage{justify-content:center}.previewShell{width:calc(100vw - 32px)}.btnrow{position:static;bottom:auto;margin-top:18px;padding-top:0;background:none}.panel{padding-bottom:18px}.smallList{margin-bottom:0}.controltitle{display:block}.activePhotoLabel{display:block;margin-top:5px;font-size:10.5px;line-height:1.35;white-space:normal;color:#98a2b3}}
 
 .saveModal{position:fixed;inset:0;background:rgba(15,23,42,.58);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}.saveModal.show{display:flex}.saveModalCard{width:min(92vw,520px);max-height:92vh;overflow:hidden;background:#fff;border-radius:22px;padding:18px;box-shadow:0 24px 80px rgba(15,23,42,.28);display:flex;flex-direction:column}.saveModalTop{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}.saveModalTitle{font-size:20px;font-weight:800;letter-spacing:-.02em}.saveModalDesc{font-size:13px;line-height:1.6;color:#667085;margin-top:4px}.saveModalClose{border:0;background:#f2f4f7;width:36px;height:36px;border-radius:10px;font-size:22px;cursor:pointer;color:#344054}.savePreviewWrap{background:#f7f8fb;border:1px solid #e6eaf0;border-radius:16px;padding:10px;display:flex;justify-content:center;align-items:center;min-height:0;flex:1;overflow:hidden}.savePreviewWrap img{display:block;max-width:100%;max-height:56vh;width:auto;height:auto;object-fit:contain;border-radius:2px}.saveModalActions{display:flex;gap:10px;margin-top:12px}.saveModalActions button{flex:1;border:0;border-radius:12px;padding:12px 14px;font-weight:800;cursor:pointer;background:#315fca;color:#fff}.saveHelp{font-size:11.5px;color:#7a8498;line-height:1.4;margin-top:9px;text-align:center;white-space:nowrap}
+.saveBrowserHelp{font-size:11.5px;color:#86A9E8;line-height:1.4;margin-top:6px;text-align:center;font-weight:700;letter-spacing:-0.01em}
 
-@media(max-width:700px){.saveModal{padding:12px}.saveModalCard{width:min(96vw,480px);max-height:94vh;padding:14px}.saveModalTop{margin-bottom:10px}.saveModalTitle{font-size:18px}.saveModalDesc{font-size:12px}.savePreviewWrap img{max-height:50vh}.saveModalActions{margin-top:10px}.saveHelp{font-size:10.5px}}
+@media(max-width:700px){.saveModal{padding:12px}.saveModalCard{width:min(96vw,480px);max-height:94vh;padding:14px}.saveModalTop{margin-bottom:10px}.saveModalTitle{font-size:18px}.saveModalDesc{font-size:12px}.savePreviewWrap img{max-height:50vh}.saveModalActions{margin-top:10px}.saveHelp{font-size:10.5px}.saveBrowserHelp{font-size:10.5px}}
 </style>
 </head>
 <body>
@@ -250,6 +251,7 @@ input[type=range]{accent-color:#4b6fd0}
       <button id="downloadJpegBtn">JPEG 저장</button>
     </div>
     <div class="saveHelp"><strong>PNG</strong>는 더 선명하고, <strong>JPEG</strong>는 용량이 더 가벼워요.</div>
+    <div class="saveBrowserHelp">저장이 되지 않는 경우, 네이버·크롬 등 다른 브라우저에서 링크를 다시 열어 시도해 주세요 :)</div>
   </div>
 </div>
 
